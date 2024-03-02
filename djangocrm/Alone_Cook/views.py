@@ -3,4 +3,4 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse("Hello, World. You're at the polls index.")
+    return HttpResponse("안녕하세요! 자취밥의 메인페이지입니다.")
