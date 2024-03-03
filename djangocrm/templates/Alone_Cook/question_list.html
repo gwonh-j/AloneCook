@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='UTF-8'>
+</head>
+<body>
+    {% if question_list %}
+    <ul>
+    {% for question in question_list %}
+        <li><a href="{% url 'Alone_Cook:detail' question.id %}">{{question.subject}}</a></li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <p>질문이 없습니다.</p>
+    {% endif %}
+</body>
+</html>
+{% endblock %}
