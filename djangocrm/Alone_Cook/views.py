@@ -3,11 +3,18 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from .models import Question, Answer
 from django.utils import timezone
 from .forms import QuestionForm, AnswerForm
+from django.core.paginator import Paginator
 
 def index(request):
-    question_list = Question.objects.order_by('-create_date') # -가 들어가면 내림차순
-    context = {'question_list' : question_list}
-    return render(request, 'Alone_Cook\question_list.html', context) # request, html 파일, 변수로 담아놨던 question_list
+    page = request.GET.get('page', '1')  # 페이지
+    question_list = Question.objects.order_by('-create_date')
+
+    paginator = Paginator(question_list, 10)  # 페이지당 10개씩 보여주기
+    max_index = len(paginator.page_range)
+
+    page_obj = paginator.get_page(page)
+    context = {'question_list': page_obj,'max_index':max_index}
+    return render(request, 'Alone_Cook/question_list.html', context)
 
 def detail(request, question_id):
     question = get_object_or_404(Question, pk = question_id)
