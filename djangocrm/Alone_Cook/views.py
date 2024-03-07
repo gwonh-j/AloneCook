@@ -4,6 +4,7 @@ from django.utils import timezone
 from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def index(request):
     page = request.GET.get('page', '1')  # 페이지
@@ -53,5 +54,23 @@ def question_create(request):
             return redirect('Alone_Cook:index')
     else: # Get 요청일 때는 단순히 질문등록 페이지 요청
         form = QuestionForm()
+    context = {'form': form}
+    return render(request, 'Alone_Cook/question_form.html', context)
+
+@login_required(login_url='common:login')
+def question_modify(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    if request.user != question.author:
+        messages.error(request, '수정권한이 없습니다')
+        return redirect('Alone_Cook:detail', question_id=question.id)
+    if request.method == "POST":
+        form = QuestionForm(request.POST, instance=question)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.modify_date = timezone.now()  # 수정일시 저장
+            question.save()
+            return redirect('Alone_Cook:detail', question_id=question.id)
+    else:
+        form = QuestionForm(instance=question)
     context = {'form': form}
     return render(request, 'Alone_Cook/question_form.html', context)
