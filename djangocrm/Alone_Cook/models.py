@@ -12,6 +12,7 @@ class Question(models.Model):
 
     def __str__(self):
         return self.subject
+    
 class Answer(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_answer')
     question = models.ForeignKey(Question, on_delete= models.CASCADE) # Question을 외래키로, 삭제시 참조되는 모든걸 삭제
@@ -19,3 +20,11 @@ class Answer(models.Model):
     create_date = models.DateTimeField() 
     modify_date = models.DateTimeField(null=True, blank=True) #수정 일시
     voter = models.ManyToManyField(User, related_name='voter_answer')
+
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_comment')
+    question = models.ForeignKey(Question, on_delete= models.CASCADE) # Question을 외래키로, 삭제시 참조되는 모든걸 삭제
+    content = models.TextField()
+    create_date = models.DateTimeField() 
+    modify_date = models.DateTimeField(null=True, blank=True) #수정 일시
+    voter = models.ManyToManyField(User, related_name='voter_comment')

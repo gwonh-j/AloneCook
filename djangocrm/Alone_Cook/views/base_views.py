@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from ..models import Question
+from ..models import Answer
 
 def index(request):
     page = request.GET.get('page', '1')  # 페이지
@@ -25,8 +26,16 @@ def index(request):
     return render(request, 'Alone_Cook/question_list.html', context)
 
 def detail(request, question_id):
-    question = get_object_or_404(Question, pk = question_id)
-    # question = Question.objects.get(id = question_id)
+    
+    page = request.GET.get('page', '1')
+    
+    question = get_object_or_404(Question, pk=question_id)
+    
+    answer_list = question.answer_set.all() # 질문을통해 답변 리스트 찾기
+    paginator = Paginator(answer_list, 5)
+    page_obj = paginator.get_page(page)
 
-    context = {'question' : question}
-    return render(request, 'Alone_Cook\question_detail.html', context)
+    context = {'question' : question, 'answer_list' : page_obj}
+    return render(request, 'Alone_Cook/question_detail.html', context)
+
+
