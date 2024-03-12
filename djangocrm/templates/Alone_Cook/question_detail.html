@@ -76,42 +76,52 @@
         </div>
     </div>
     {% endfor %}
-    <!-- 답변 페이징 -->
-<ul class = "pagination justify-content-center">
+<!-- answer페이징처리 시작 -->
+<ul class="pagination justify-content-center">
     <!-- 이전페이지 -->
     {% if answer_list.has_previous %}
     <li class="page-item">
-        <a class="page-link" href="?page={{ answer_list.previous_page_number }}">이전</a>
+        <a class="page-link" data-page="{{ answer_list.previous_page_number }}"
+           href="javascript:void(0)">이전</a>
     </li>
     {% else %}
     <li class="page-item disabled">
-        <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
+        <a class="page-link" tabindex="-1" aria-disabled="true"
+           href="javascript:void(0)">이전</a>
     </li>
     {% endif %}
     <!-- 페이지리스트 -->
     {% for page_number in answer_list.paginator.page_range %}
-        {% if page_number == answer_list.number %}
-        <li class="page-item active" aria-current="page">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-        </li>
-        {% else %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-        </li>
-        {% endif %}
+    {% if page_number >= answer_list.number|add:-5 and page_number <= answer_list.number|add:5 %}
+    {% if page_number == answer_list.number %}
+    <li class="page-item active" aria-current="page">
+        <a class="page-link" data-page="{{ page_number }}"
+           href="javascript:void(0)">{{ page_number }}</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+        <a class="page-link" data-page="{{ page_number }}"
+           href="javascript:void(0)">{{ page_number }}</a>
+    </li>
+    {% endif %}
+    {% endif %}
     {% endfor %}
     <!-- 다음페이지 -->
     {% if answer_list.has_next %}
     <li class="page-item">
-        <a class="page-link" href="?page={{ answer_list.next_page_number }}">다음</a>
+        <a class="page-link" data-page="{{ answer_list.next_page_number }}"
+           href="javascript:void(0)">다음</a>
     </li>
     {% else %}
     <li class="page-item disabled">
-        <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
+        <a class="page-link" tabindex="-1" aria-disabled="true"
+           href="javascript:void(0)">다음</a>
     </li>
     {% endif %}
 </ul>
-<!-- 페이징 END -->
+<!-- 페이징처리 끝 -->
+
+
     <!-- 답변 등록 -->
     <form action="{% url 'Alone_Cook:answer_create' question.id %}" method="post" class="my-3">
         {% csrf_token %}
@@ -123,6 +133,10 @@
         <input type="submit" value="답변등록" class="btn btn-primary">
     </form>
 </div>
+<form id="searchForm" method="get" action="{% url 'Alone_Cook:detail' question.id %}">
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+    <input type="hidden" id="so" name="so" value="{{ so }}">
+</form>
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>
@@ -140,6 +154,13 @@ Array.from(recommend_elements).forEach(function(element) {
         if(confirm("정말로 추천하시겠습니까?")) {
             location.href = this.dataset.uri;
         };
+    });
+});
+const page_elements = document.getElementsByClassName("page-link");
+Array.from(page_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        document.getElementById('page').value = this.dataset.page;
+        document.getElementById('searchForm').submit();
     });
 });
 </script>
