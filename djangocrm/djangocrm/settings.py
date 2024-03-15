@@ -12,14 +12,25 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import os
+import environ
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 환경변수를 불러올 수 있는 상태로 설정
+env = environ.Env(DEBUG=(bool, True))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
+# 읽어올 환경 변수 파일을 지정
+environ.Env.read_env(
+  env_file = os.path.join(BASE_DIR, '.env')
+)
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# 설정한 변수를 읽어옴
+API_KEY = env('API_KEY')
+
+
+
+
 SECRET_KEY = '38juf3-*2)kh7^d=2gb!(-cypbm8mtx$5qn^fp+-5e+jkehbd7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
