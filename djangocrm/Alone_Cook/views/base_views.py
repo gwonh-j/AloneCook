@@ -2,7 +2,16 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q, Count
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+import requests, json
+from django.conf import settings
+
 from ..models import Question, Answer
+
+API_KEY = settings.API_KEY
+
 
 def index(request):
     page = request.GET.get('page', '1') # 페이지
@@ -53,4 +62,18 @@ def detail(request, question_id):
     context = {'question': question, 'answer_list': page_obj, 'page': page, 'so': so}
     return render(request, 'Alone_Cook/question_detail.html', context)
 
-
+#http://openapi.foodsafetykorea.go.kr/api/keyId/serviceId/dataType/startIdx/endIdx
+@api_view(['GET'])
+def foods(request):
+    url = 'http://openapi.foodsafetykorea.go.kr/api'
+    params = {
+        'keyId': API_KEY,
+        'serviceId': 'COOKRCP01',
+        'dataType': 'json',
+        'startIdx': '1',
+        'endIdx': '1000' 
+    }
+    response = requests.get(url, params=params)
+    products_data = response.json()['result']['baseList']
+    
+    return Response(products_data)

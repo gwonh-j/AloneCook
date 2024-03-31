@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,10 +23,18 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#api function
+env = environ.Env(DEBUG=(bool,True))
+
+environ.Env.read_env(env_file=os.path.join(BASE_DIR,'.env'))
+#environ.Env.read_env()
+API_KEY = env('API_KEY')
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
